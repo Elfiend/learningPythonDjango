@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  pyexam:
+    image: exam-python
+    container_name: ExamPython
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: python3 manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8000:8000
+    restart: unless-stopped
