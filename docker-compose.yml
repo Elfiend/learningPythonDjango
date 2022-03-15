@@ -10,4 +10,24 @@ services:
     command: python3 manage.py runserver 0.0.0.0:8000
     ports:
       - 8000:8000
+    environment:
+      - POSTGRES_HOST=psqldb
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     restart: unless-stopped
+    depends_on:
+      - psqldb
+    links:
+      - psqldb:psqldb
+
+  psqldb:
+    image: postgres
+    volumes:
+      - /Volumes/LaCie/Docker/postgres/data/db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
