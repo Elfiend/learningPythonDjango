@@ -11,7 +11,8 @@ class Auth0(BaseOAuth2):
     REDIRECT_STATE = False
     EXTRA_DATA = [
         ('picture', 'picture'),
-        ('email', 'email')
+        ('email', 'email'),
+        ('email_verified', 'email_verified'),
     ]
 
     def authorization_url(self):
@@ -36,4 +37,5 @@ class Auth0(BaseOAuth2):
                 'first_name': payload['name'],
                 'picture': payload['picture'],
                 'user_id': payload['sub'],
-                'email': payload['email']}
+                'email': payload['email'],
+                'email_verified':payload['email_verified']}

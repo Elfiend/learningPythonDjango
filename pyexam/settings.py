@@ -139,10 +139,13 @@ SOCIAL_AUTH_AUTH0_SCOPE = [
     'email'
 ]
 
+SOCIAL_AUTH_AUTH0_API_KEY = os.environ.get("AUTH0_API_KEY")
+SOCIAL_AUTH_AUTH0_API_SECRET = os.environ.get("AUTH0_API_SECRET")
+
 AUTHENTICATION_BACKENDS = {
     'login.auth0backend.Auth0',
     'django.contrib.auth.backends.ModelBackend'
 }
 
 LOGIN_URL = '/login/auth0'
-LOGIN_REDIRECT_URL = '/dashboard'
+LOGIN_REDIRECT_URL = '/'
