@@ -149,3 +149,14 @@ AUTHENTICATION_BACKENDS = {
 
 LOGIN_URL = '/login/auth0'
 LOGIN_REDIRECT_URL = '/'
+
+AUTH_PASSWORD_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 8, }
+     },
+    {'NAME': 'login.framework.validators.NumberValidator', },
+    {'NAME': 'login.framework.validators.UppercaseValidator', },
+    {'NAME': 'login.framework.validators.LowercaseValidator', },
+    {'NAME': 'login.framework.validators.SymbolValidator', },
+]

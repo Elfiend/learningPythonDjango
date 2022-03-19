@@ -8,6 +8,8 @@ from urllib.parse import urlencode
 import json
 import requests
 
+from django.contrib.auth.forms import PasswordChangeForm
+
 def index(request):
     user = request.user
 
@@ -75,6 +77,25 @@ def resend_verification_email(request):
     print(response.json())
     return render(request, 'email_verification.html')
 
+
+def reset_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            new_password = form.clean_new_password2()
+
+            user = request.user
+            auth0_user = user.social_auth.get(provider='auth0')
+            uid = auth0_user.uid
+
+            _reset_password(uid, new_password)
+
+            return render(request, 'dashboard.html')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'reset_password.html', {'form': form})
+
+
 def logout(request):
     log_out(request)
     return_to = urlencode({'returnTo': request.build_absolute_uri('/')})
@@ -87,3 +108,17 @@ def _get_identity_user_id(user_id, provider):
     if user_id.startswith(prefix):
         return user_id[len(prefix):]
     return user_id
+
+
+def _reset_password(uid, new_password):
+    headers = {
+        'Content-Type': 'application/json'
+    }    
+    payload = {
+        "email_verified": false,
+        'password': new_password,
+        'connection':'Initial-Connection',
+    }
+    url = f'{base_url}/api/v2/users/{uid}'
+    response = requests.patch(url,headers=headers,data = json.dumps(user_data))
+    print(response.json())
