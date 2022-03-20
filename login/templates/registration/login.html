@@ -10,5 +10,6 @@
 </form>
 
 <a href="{% url 'dashboard' %}">Back to dashboard</a>
+<a href="{% url 'social:begin' 'auth0' %}">Login with FB/Google</a>
 <a href="{% url 'register' %}">Register</a>
 {% endblock %}
