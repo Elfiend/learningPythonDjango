@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="login-page clearfix">
+	<div class="logged-in-box auth0-box logged-in">
+		<h2>Resend Email Verification</h2>
+		<h2>Hello, {{ user.username|default:'Guest' }}!</h2>
+		<a id="qsResendEmailBtn" class="btn btn-primary btn-lg btn-block" href="/resend-verification-email">Resend Email
+			Verification</a>
+		<a id="qsLogoutBtn" class="btn btn-primary btn-lg btn-logout btn-block" href="/logout">Logout</a>
+	</div>
+</div>
+{% endblock content %}

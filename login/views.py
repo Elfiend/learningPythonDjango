@@ -12,7 +12,17 @@ from django.urls import reverse
 from .forms import CustomUserCreationForm
 
 
-# Create your views here.
+def index(request):
+    user = request.user
+    if not user.is_authenticated:
+        return render(request, 'users/index.html')
+
+    if not user.is_active:
+        return render(request, 'users/email_verification.html')
+    
+    return redirect(dashboard)        
+
+@login_required()
 def dashboard(request):
     return render(request, "users/dashboard.html")
 
