@@ -11,10 +11,9 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from django.views.generic import UpdateView, View
 
 from .forms import LocalUserCreationForm
 from .models import LocalUser
@@ -45,6 +44,7 @@ def register(request):
             user.backend = "django.contrib.auth.backends.ModelBackend"
             user.username = user.email
             user.email_confirmed = False
+            user.is_social_auth = False
             user.save()
             # Send email
             _send_verification_email(request, user)
@@ -87,10 +87,15 @@ def activate_account(request, uidb64, token, *args, **kwargs):
 
 
 def logout(request):
-    log_out(request)
-    return_to = urlencode({'returnTo': request.build_absolute_uri('/')})
-    logout_url = 'https://%s/v2/logout?client_id=%s&%s' % \
+    user = request.user
+    if user.is_social_auth is True:
+        return_to = urlencode({'returnTo': request.build_absolute_uri('/')})
+        logout_url = 'https://%s/v2/logout?client_id=%s&%s' % \
                  (settings.SOCIAL_AUTH_AUTH0_DOMAIN, settings.SOCIAL_AUTH_AUTH0_KEY, return_to)
+    else:
+        logout_url = reverse("home")
+
+    log_out(request)
     return HttpResponseRedirect(logout_url)
 
 
