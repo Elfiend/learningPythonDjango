@@ -6,7 +6,6 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth import logout as log_out
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponseRedirect
@@ -17,7 +16,8 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views.generic import UpdateView, View
 
-from .forms import CustomUserCreationForm
+from .forms import LocalUserCreationForm
+from .models import LocalUser
 
 
 def index(request):
@@ -25,7 +25,7 @@ def index(request):
     if not user.is_authenticated:
         return render(request, 'users/index.html')
 
-    if user:
+    if user.email_confirmed is not True:
         return render(request, 'users/email_verification.html')
 
     return redirect(dashboard)
@@ -38,11 +38,13 @@ def dashboard(request):
 
 def register(request):
     if request.method == "POST":
-        form = CustomUserCreationForm(request.POST)
+        form = LocalUserCreationForm(request.POST)
         if form.is_valid():
             # Create user
             user = form.save(commit=False)
             user.backend = "django.contrib.auth.backends.ModelBackend"
+            user.username = user.email
+            user.email_confirmed = False
             user.save()
             # Send email
             _send_verification_email(request, user)
@@ -50,7 +52,7 @@ def register(request):
             login(request, user)
             return redirect(reverse("home"))
     else:
-        form = CustomUserCreationForm()
+        form = LocalUserCreationForm()
 
     return render(request, 'users/register.html', {'form': form})
 
@@ -65,13 +67,14 @@ def resend_verification_email(request):
 def activate_account(request, uidb64, token, *args, **kwargs):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = LocalUser.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, LocalUser.DoesNotExist):
         user = None
 
     if user is not None and PasswordResetTokenGenerator().check_token(
             user, token):
         user.backend = "django.contrib.auth.backends.ModelBackend"
+        user.email_confirmed = True
         user.save()
         login(request, user)
         messages.success(request, ('Your account have been confirmed.'))
