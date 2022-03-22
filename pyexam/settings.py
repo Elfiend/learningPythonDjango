@@ -132,7 +132,7 @@ LOGOUT_REDIRECT_URL = '/'
 AUTH_USER_MODEL = 'login.LocalUser'
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
-    'login.auth0backend.Auth0',
+    'social_core.backends.auth0.Auth0OAuth2',
 ]
 SOCIAL_AUTH_TRAILING_SLASH = False  # Remove trailing slash from routes
 SOCIAL_AUTH_AUTH0_DOMAIN = os.environ.get("AUTH0_DOMAIN")
