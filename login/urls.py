@@ -3,10 +3,11 @@ from django.contrib.auth.views import (PasswordChangeDoneView,
 from django.urls import include, path, re_path
 
 from . import views
+from .views import ProfileView
 
 urlpatterns = [
     path('', views.index, name='home'),
-    re_path(r"^dashboard/", views.dashboard, name="dashboard"),
+    path("dashboard/<int:pk>/", ProfileView.as_view(), name="dashboard"),
     re_path(r"^register/", views.register, name="register"),
     re_path('logout', views.logout, name="logout"),
     path('activate/<uidb64>/<token>/', views.activate_account,

@@ -3,7 +3,7 @@ import unicodedata
 from django import forms
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 
-from .models import LocalUser
+from .models import LocalUser, Profile
 
 
 class EmailField(forms.CharField):
@@ -42,3 +42,10 @@ class LocalUserChangeForm(UserChangeForm):
         model = LocalUser
         fields = "__all__"
         field_classes = {"email": EmailField}
+
+
+class ProfileForm(forms.ModelForm):
+
+    class Meta:
+        model = Profile
+        fields = ('social_name', )

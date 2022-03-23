@@ -7,16 +7,19 @@ from django.contrib.auth import login
 from django.contrib.auth import logout as log_out
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
+from django.utils.decorators import method_decorator
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.views.generic import UpdateView
 
-from .forms import LocalUserCreationForm
-from .models import LocalUser
+from .forms import LocalUserCreationForm, ProfileForm
+from .models import LocalUser, Profile
 
 
 def index(request):
@@ -27,12 +30,7 @@ def index(request):
     if user.email_confirmed is not True:
         return render(request, 'users/email_verification.html')
 
-    return redirect(dashboard)
-
-
-@login_required()
-def dashboard(request):
-    return render(request, "users/dashboard.html")
+    return redirect(reverse('dashboard', kwargs={'pk': user.pk}))
 
 
 def register(request):
@@ -113,3 +111,12 @@ def _send_verification_email(request, user):
 
     messages.success(request,
                      ('Please Confirm your email to complete registration.'))
+
+
+@method_decorator(login_required, name='dispatch')
+class ProfileView(SuccessMessageMixin, UpdateView):
+    model = Profile
+    form_class = ProfileForm
+    success_url = reverse_lazy('home')
+    template_name = 'users/dashboard.html'
+    success_message = 'Name successfully Changed!'
