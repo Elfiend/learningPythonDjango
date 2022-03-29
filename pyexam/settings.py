@@ -32,7 +32,9 @@ ALLOWED_HOSTS = [
     'elfiend.ddns.net',
     'qa-elfiend.herokuapp.com',
 ]
-
+CSRF_TRUSTED_ORIGINS = [
+    'https://qa-elfiend.herokuapp.com',
+]
 
 # Application definition
 
