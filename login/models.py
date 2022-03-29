@@ -72,6 +72,6 @@ def create_profile(backend, user, response, *args, **kwargs):
     profile = user.profile
     if profile is None:
         profile = Profile(user_id=user.id)
-    if profile.social_name is None:
+    if not profile.social_name:
         profile.social_name = kwargs.get('details').get('fullname')
         profile.save()
