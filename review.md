@@ -1,0 +1,4 @@
+- Login page : 調整為Sign up/ Sign in
+- Django Rest Framework
+- Coding Style
+	- use pylint
